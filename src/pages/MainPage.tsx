@@ -47,6 +47,12 @@ const MainPage = () => {
         </Typography>
       )}
 
+      {animes.length > 0 && (
+        <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
+          Found {animes.length} results
+        </Typography>
+      )}
+
       <Grid container spacing={3} sx={{ mt: 2 }}>
         {(loading ? skeletonArray : animes).map((anime, index) => (
           <Grid
@@ -76,6 +82,8 @@ const MainPage = () => {
             onChange={handlePageChange}
             color="primary"
             size="large"
+            showFirstButton
+            showLastButton
           />
         </Box>
       )}
