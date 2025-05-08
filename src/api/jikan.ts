@@ -1,5 +1,5 @@
 import axios from "axios";
-import { JikanResponse } from "../types/anime";
+import { JikanListResponse, JikanDetailsResponse } from "../types/anime";
 
 const API_BASE_URL = "https://api.jikan.moe/v4";
 const API_TIMEOUT = 10000; // 10 seconds
@@ -11,7 +11,7 @@ const api = axios.create({
 
 export const fetchAllAnime = async (params) => {
   try {
-    const response = await api.get<JikanResponse>("/anime", {
+    const response = await api.get<JikanListResponse>("/anime", {
       params: params,
     });
     return response.data;
@@ -23,7 +23,7 @@ export const fetchAllAnime = async (params) => {
 
 export const fetchAnimeDetails = async (id: number) => {
   try {
-    const response = await api.get<JikanResponse>(`/anime/${id}`);
+    const response = await api.get<JikanDetailsResponse>(`/anime/${id}`);
     return response.data;
   } catch (error) {
     console.error("Error fetching anime details:", error);

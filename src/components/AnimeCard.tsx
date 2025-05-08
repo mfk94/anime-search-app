@@ -9,26 +9,31 @@ import {
   Chip,
   Rating,
   Stack,
+  Skeleton,
 } from "@mui/material";
 import { Flame, CheckCircle, Clock } from "lucide-react";
 import { Anime } from "../types/anime";
+import { useResponsive } from '../hooks';
 
 interface AnimeCardProps {
   anime: Anime;
   onClick: (anime: Anime) => void;
+  isLoading?: boolean;
 }
 
-const AnimeCard: React.FC<AnimeCardProps> = ({ anime, onClick }) => {
+const AnimeCard: React.FC<AnimeCardProps> = ({ anime, onClick, isLoading = false }) => {
+  const { isMobile } = useResponsive();
+
   const getStatus = (
-    status: string,
-    airing: boolean
+    status: string | undefined,
+    airing: boolean | undefined
   ): "Airing" | "Finished" | "Upcoming" => {
     if (airing) return "Airing";
     if (status === "Not yet aired") return "Upcoming";
     return "Finished";
   };
 
-  const animeStatus = getStatus(anime.status, anime.airing);
+  const animeStatus = !isLoading ? getStatus(anime.status, anime.airing) : "Finished";
 
   // Status icon mapping
   const statusIcons = {
@@ -44,17 +49,51 @@ const AnimeCard: React.FC<AnimeCardProps> = ({ anime, onClick }) => {
     Upcoming: "info",
   };
 
+  if (isLoading) {
+    return (
+      <Card
+        sx={{
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          cursor: "pointer",
+          transition: "transform 0.2s",
+          "&:hover": {
+            transform: "scale(1.02)",
+          },
+        }}
+      >
+        <Skeleton
+          variant="rectangular"
+          height={isMobile ? 200 : 300}
+          animation="wave"
+        />
+        <CardContent sx={{ flexGrow: 1 }}>
+          <Skeleton variant="text" height={32} animation="wave" />
+          <Box sx={{ mt: 1 }}>
+            <Skeleton variant="text" width="60%" animation="wave" />
+            <Skeleton variant="text" width="40%" animation="wave" />
+          </Box>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card
+      onClick={() => onClick(anime)}
       sx={{
         height: "100%",
         display: "flex",
         flexDirection: "column",
-        position: "relative",
+        cursor: "pointer",
+        transition: "transform 0.2s",
+        "&:hover": {
+          transform: "scale(1.02)",
+        },
       }}
     >
       <CardActionArea
-        onClick={() => onClick(anime)}
         sx={{
           flexGrow: 1,
           display: "flex",
@@ -72,7 +111,7 @@ const AnimeCard: React.FC<AnimeCardProps> = ({ anime, onClick }) => {
         >
           <CardMedia
             component="img"
-            image={anime.images.jpg.large_image_url}
+            image={anime.images?.jpg?.large_image_url || ''}
             alt={anime.title}
             sx={{
               position: "absolute",
@@ -139,7 +178,7 @@ const AnimeCard: React.FC<AnimeCardProps> = ({ anime, onClick }) => {
                 gap: 0.5,
               }}
             >
-              {anime.genres.slice(0, 3).map((genre, index) => (
+              {anime.genres?.slice(0, 3).map((genre, index) => (
                 <Chip
                   key={index}
                   label={genre.name}

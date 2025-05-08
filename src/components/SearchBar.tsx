@@ -5,12 +5,11 @@ import {
     IconButton,
     ToggleButtonGroup,
     ToggleButton,
-    Box,
-    useTheme,
-    useMediaQuery
+    Box
 } from '@mui/material';
 import { Search as SearchIcon } from 'lucide-react';
 import { SearchFilters, AnimeCategory } from '../types/anime';
+import { useResponsive } from '../hooks';
 
 interface SearchBarProps {
     filters: SearchFilters;
@@ -18,8 +17,7 @@ interface SearchBarProps {
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({ filters, onFilterChange }) => {
-    const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+    const { isMobile } = useResponsive();
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         onFilterChange({ ...filters, query: e.target.value });

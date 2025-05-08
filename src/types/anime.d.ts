@@ -37,11 +37,15 @@ export interface SearchFilters {
   category: AnimeCategory;
 }
 
-export interface JikanResponse {
+export interface JikanListResponse {
   data: Anime[];
   pagination: {
     has_next_page: boolean;
     current_page: number;
     last_visible_page: number;
   };
+}
+
+export interface JikanDetailsResponse {
+  data: Anime;
 }

@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React from 'react';
+import { useParams } from 'react-router-dom';
 import {
     Container,
     Box,
@@ -10,45 +10,16 @@ import {
     IconButton,
     CircularProgress,
     Paper,
-    useTheme,
-    useMediaQuery,
     Button
 } from '@mui/material';
 import { ArrowLeft, Calendar, Film, Star, Users, Trophy, Clock, Heart, Play } from 'lucide-react';
-import { Anime } from '../types/anime';
-import { fetchAnimeDetails } from '../api/jikan';
+import { useAnimeDetails, useResponsive, useNavigation } from '../hooks';
 
 const DetailsPage: React.FC = () => {
     const { id } = useParams();
-    const navigate = useNavigate();
-    const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-    const [anime, setAnime] = useState<Anime | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-
-    const fetchDetails = async () => {
-        try {
-            setLoading(true);
-            setError(null);
-
-            const response = await fetchAnimeDetails(Number(id));
-
-            setAnime(response.data);
-        } catch (err) {
-            setError(err instanceof Error ? err.message : 'Failed to fetch anime details');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            fetchDetails();
-        }, 250); // 250ms delay to simulate loading
-
-        return () => clearTimeout(timer);
-    }, [id]);
+    const { anime, loading, error } = useAnimeDetails(id);
+    const { isMobile, theme } = useResponsive();
+    const { goBack } = useNavigation();
 
     if (loading) {
         return (
@@ -114,7 +85,7 @@ const DetailsPage: React.FC = () => {
 
                 <Container maxWidth="xl" sx={{ mt: { xs: -15, md: -20 }, position: 'relative', zIndex: 1 }}>
                     <IconButton
-                        onClick={() => navigate(-1)}
+                        onClick={goBack}
                         sx={{
                             position: 'absolute',
                             top: { xs: -40, md: -60 },
@@ -201,7 +172,6 @@ const DetailsPage: React.FC = () => {
                                                     <Typography variant="subtitle2" fontWeight="bold">Episodes</Typography>
                                                     <Typography variant="body2" color="text.secondary" >
                                                         {anime.episodes || 'N/A'}
-
                                                     </Typography>
                                                 </Grid>
                                             </Grid>
@@ -266,10 +236,10 @@ const DetailsPage: React.FC = () => {
                                         Studios
                                     </Typography>
                                     <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-                                        {anime.studios.map((genre) => (
+                                        {anime.studios.map((studio) => (
                                             <Chip
-                                                key={genre.name}
-                                                label={genre.name}
+                                                key={studio.name}
+                                                label={studio.name}
                                                 variant="outlined"
                                                 sx={{ mb: 1 }}
                                             />
@@ -281,10 +251,10 @@ const DetailsPage: React.FC = () => {
                                         Producers
                                     </Typography>
                                     <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-                                        {anime.producers.map((genre) => (
+                                        {anime.producers.map((producer) => (
                                             <Chip
-                                                key={genre.name}
-                                                label={genre.name}
+                                                key={producer.name}
+                                                label={producer.name}
                                                 variant="outlined"
                                                 sx={{ mb: 1 }}
                                             />
@@ -311,10 +281,10 @@ const DetailsPage: React.FC = () => {
                                         Themes
                                     </Typography>
                                     <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-                                        {anime.themes.map((genre) => (
+                                        {anime.themes.map((theme) => (
                                             <Chip
-                                                key={genre.name}
-                                                label={genre.name}
+                                                key={theme.name}
+                                                label={theme.name}
                                                 variant="outlined"
                                                 sx={{ mb: 1 }}
                                             />
